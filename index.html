@@ -1,19 +1,51 @@
 <!DOCTYPE html>
 <html>
-  <body>
-    <h2>Set Alarm</h2>
-    <input type="datetime-local" id="alarmTime">
-    <button onclick="setAlarm()">Set Alarm</button>
+<head>
+  <title>I Am Alive Notifier</title>
+</head>
+<body>
+  <h2>Notification will be sent every 10 seconds</h2>
+  <button onclick="startNotifications()">Start</button>
+  <button onclick="stopNotifications()">Stop</button>
 
-    <script>
-      function setAlarm() {
-        var millis = new Date(document.getElementById('alarmTime').value).getTime();
-        if (window.AndroidInterface) {
-          window.AndroidInterface.setAlarm(millis);
-        } else {
-          alert("Interface not available");
-        }
+  <script>
+    let intervalId = null;
+
+    async function requestPermission() {
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") {
+        alert("Notification permission is required.");
+        return false;
       }
-    </script>
-  </body>
+      return true;
+    }
+
+    async function startNotifications() {
+      const granted = await requestPermission();
+      if (!granted) return;
+
+      if (intervalId) return; // already running
+
+      sendNotification(); // send once immediately
+      intervalId = setInterval(sendNotification, 10000); // every 10 sec
+    }
+
+    function stopNotifications() {
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+        alert("Notifications stopped");
+      }
+    }
+
+    function sendNotification() {
+      if (Notification.permission === "granted") {
+        new Notification("I am alive ✅", {
+          body: "Still running at " + new Date().toLocaleTimeString(),
+          icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Emoji_u2705.svg/1024px-Emoji_u2705.svg.png"
+        });
+      }
+    }
+  </script>
+</body>
 </html>
