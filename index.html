@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h2>Set Alarm</h2>
+    <input type="datetime-local" id="alarmTime">
+    <button onclick="setAlarm()">Set Alarm</button>
+
+    <script>
+      function setAlarm() {
+        var millis = new Date(document.getElementById('alarmTime').value).getTime();
+        if (window.AndroidInterface) {
+          window.AndroidInterface.setAlarm(millis);
+        } else {
+          alert("Interface not available");
+        }
+      }
+    </script>
+  </body>
+</html>
